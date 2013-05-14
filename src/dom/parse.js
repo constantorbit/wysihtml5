@@ -181,8 +181,14 @@ wysihtml5.dom.parse = (function() {
         nodeName = "div";
       }
     }
-    
-    if (nodeName in tagRules) {
+
+    if ("*" in tagRules) {
+      var attrs = {};
+      for (var i = 0; i < oldNode.attributes.length; i++) {
+        attrs[oldNode.attributes[i].nodeName] = oldNode.attributes[i].nodeValue;
+      }
+      rule = { set_attributes: attrs };
+    } else if (nodeName in tagRules) {
       rule = tagRules[nodeName];
       if (!rule || rule.remove) {
         return null;
@@ -268,7 +274,7 @@ wysihtml5.dom.parse = (function() {
     classesLength = classes.length;
     for (; i<classesLength; i++) {
       currentClass = classes[i];
-      if (allowedClasses[currentClass]) {
+      if (allowedClasses['*'] || allowedClasses[currentClass]) {
         newClasses.push(currentClass);
       }
     }
@@ -445,3 +451,4 @@ wysihtml5.dom.parse = (function() {
   
   return parse;
 })();
+

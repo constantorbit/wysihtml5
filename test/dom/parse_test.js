@@ -448,33 +448,56 @@ if (wysihtml5.browser.supported()) {
       "Unknown tag with namespace gets renamed to span"
     );
   });
-  
-  
-  test("Check whether classes are correctly treated", function() {
-    var rules = {
-      classes: {
-        a: 1,
-        c: 1
-      },
-      tags: {
-        footer: "div"
-      }
-    };
-    
-    this.equal(
-      this.sanitize('<header class="a b c">foo</header>', rules),
-      '<span class="a c">foo</span>',
-      "Allowed classes 'a' and 'c' are correctly kept and unknown class 'b' is correctly removed."
-    );
-    
-    this.equal(
-      this.sanitize('<footer class="ab c d" class="a">foo</footer>', rules),
-      '<div class="c">foo</div>',
-      "Allowed classes 'c' is correctly kept and unknown class 'b' is correctly removed."
-    );
-  });
-  
-  test("Check Firefox misbehavior with tilde characters in urls", function() {
+
+
+    test("Check whether classes are correctly treated", function() {
+        var rules = {
+            classes: {
+                a: 1,
+                c: 1
+            },
+            tags: {
+                footer: "div"
+            }
+        };
+
+        this.equal(
+            this.sanitize('<header class="a b c">foo</header>', rules),
+            '<span class="a c">foo</span>',
+            "Allowed classes 'a' and 'c' are correctly kept and unknown class 'b' is correctly removed."
+        );
+
+        this.equal(
+            this.sanitize('<footer class="ab c d" class="a">foo</footer>', rules),
+            '<div class="c">foo</div>',
+            "Allowed classes 'c' is correctly kept and unknown class 'b' is correctly removed."
+        );
+    });
+
+    test("Check whether wildcard override is handled correctly", function() {
+        var rules = {
+            classes: {
+                "*": 1
+            },
+            tags: {
+                "*": {}
+            }
+        };
+
+        this.equal(
+            this.sanitize('<header class="a b c">foo</header>', rules),
+            '<header class="a b c">foo</header>',
+            "Allowed classes 'a' and 'c' are correctly kept and unknown class 'b' is correctly removed."
+        );
+
+        this.equal(
+            this.sanitize('<a class="ab c d" class="a" href="flop">foo</a>', rules),
+            '<a class="ab c d" href="flop">foo</a>',
+            "All attributes and their values are kept."
+        );
+    });
+
+    test("Check Firefox misbehavior with tilde characters in urls", function() {
     var rules = {
       tags: {
         a: {
